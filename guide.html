@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סדר הפעולות הנכון ביצירת סרטונים עם AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:       #7C5CFC;
+      --primary-light: #A78BFA;
+      --accent:        #FF6B35;
+      --gold:          #F5C518;
+      --green:         #34D399;
+      --dark:          #0F0F1A;
+      --dark-2:        #161628;
+      --dark-3:        #1E1E38;
+      --dark-4:        #252545;
+      --text:          #E2E2F0;
+      --text-muted:    #8888AA;
+      --white:         #FFFFFF;
+      --border:        rgba(124,92,252,0.2);
+      --r:             14px;
+      --rl:            22px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       GATE
+    ============================================================ */
+    #gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%,  rgba(124,92,252,0.2) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 80% 90%, rgba(255,107,53,0.1) 0%, transparent 60%),
+        var(--dark);
+    }
+    .gate-card {
+      width: 100%;
+      max-width: 500px;
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 48px 44px 40px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .gate-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(124,92,252,0.15);
+      border: 1px solid rgba(124,92,252,0.3);
+      color: var(--primary-light);
+      padding: 4px 14px; border-radius: 50px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .gate-title {
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 900; color: var(--white);
+      line-height: 1.25; margin-bottom: 12px;
+    }
+    .gate-title span {
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .gate-meta {
+      font-size: 14px; color: var(--text-muted);
+      margin-bottom: 24px; line-height: 1.6;
+    }
+    .gate-steps {
+      list-style: none;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+    }
+    .gate-steps li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px; color: var(--text-muted);
+    }
+    .gate-steps li:last-child { border-bottom: none; }
+    .gate-steps li .sn {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .gate-form .fg { margin-bottom: 14px; }
+    .gate-form label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .gate-form input {
+      width: 100%;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 18px;
+      font-family: 'Heebo', sans-serif; font-size: 16px;
+      color: var(--text); outline: none; transition: all 0.2s;
+    }
+    .gate-form input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.18);
+    }
+    .gate-form input::placeholder { color: var(--text-muted); opacity: 0.5; }
+    .gate-btn {
+      width: 100%; padding: 16px; border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; font-family: 'Heebo', sans-serif;
+      font-size: 17px; font-weight: 800;
+      cursor: pointer; margin-top: 4px;
+      transition: all 0.25s;
+      box-shadow: 0 6px 24px rgba(124,92,252,0.45);
+    }
+    .gate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(124,92,252,0.6); }
+    .gate-note {
+      font-size: 13px; color: var(--text-muted);
+      text-align: center; margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      .gate-card { padding: 32px 24px 28px; }
+    }
+
+    /* ============================================================
+       GUIDE
+    ============================================================ */
+    #guide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #guide.visible { opacity: 1; }
+
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      min-height: 100vh;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh;
+      overflow-y: auto;
+      background: var(--dark-2);
+      border-left: 1px solid var(--border);
+      padding: 28px 16px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .sidebar-logo {
+      font-size: 13px; font-weight: 800;
+      color: var(--primary-light);
+      margin-bottom: 18px; padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--r);
+      font-size: 14px; font-weight: 500;
+      color: var(--text-muted); text-decoration: none;
+      transition: all 0.2s; border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--dark-3); color: var(--text); }
+    .nav-item.active {
+      background: rgba(124,92,252,0.15);
+      border-color: rgba(124,92,252,0.3);
+      color: var(--primary-light);
+    }
+    .nav-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--dark-4); font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--text-muted);
+    }
+    .nav-item.active .nav-num { background: var(--primary); color: white; }
+    .progress-wrap {
+      margin-top: auto; padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .progress-label {
+      font-size: 12px; color: var(--text-muted);
+      display: flex; justify-content: space-between; margin-bottom: 7px;
+    }
+    .progress-bar { height: 5px; background: var(--dark-4); border-radius: 50px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 50px; transition: width 0.4s ease;
+    }
+
+    /* --- Content --- */
+    .content { max-width: 720px; padding-bottom: 0; }
+
+    .guide-header {
+      background: linear-gradient(135deg, var(--dark-2), var(--dark-3));
+      border-bottom: 1px solid var(--border);
+      padding: 52px 48px 40px;
+      position: relative; overflow: hidden;
+    }
+    .guide-header::before {
+      content: ''; position: absolute; top: -60px; left: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(124,92,252,0.14), transparent 70%);
+      pointer-events: none;
+    }
+    .g-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(124,92,252,0.15); border: 1px solid rgba(124,92,252,0.3);
+      color: var(--primary-light); padding: 4px 12px; border-radius: 50px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .guide-header h1 {
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 900; color: var(--white); line-height: 1.25; margin-bottom: 12px;
+    }
+    .guide-header h1 span {
+      background: linear-gradient(135deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .g-meta {
+      display: flex; flex-wrap: wrap; gap: 18px; margin-top: 20px;
+      font-size: 14px; color: var(--text-muted);
+    }
+
+    .intro-box {
+      margin: 28px 48px;
+      background: rgba(124,92,252,0.07);
+      border: 1px solid rgba(124,92,252,0.2);
+      border-radius: var(--rl);
+      padding: 26px 34px;
+      font-size: 17px; color: var(--text); line-height: 1.85;
+    }
+
+    /* --- Sections --- */
+    .gs { padding: 46px 48px 0; }
+    .sdiv {
+      margin: 38px 48px 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* step header */
+    .step-hero {
+      display: flex; align-items: flex-start; gap: 16px;
+      margin-bottom: 24px; padding-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sbadge {
+      flex-shrink: 0; width: 48px; height: 48px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), #5B3FE8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 21px; font-weight: 900; color: white;
+      box-shadow: 0 4px 14px rgba(124,92,252,0.4);
+    }
+    .sbadge.s2 { background: linear-gradient(135deg, #EC4899, #9B1DFF); box-shadow: 0 4px 14px rgba(155,29,255,0.3); }
+    .sbadge.s3 { background: linear-gradient(135deg, #F59E0B, #EF4444); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+    .sbadge.s4 { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+    .sbadge.s5 { background: linear-gradient(135deg, #3B82F6, #8B5CF6); box-shadow: 0 4px 14px rgba(59,130,246,0.3); }
+    .s-title { font-size: clamp(19px, 2.5vw, 26px); font-weight: 800; color: var(--white); line-height: 1.2; }
+    .s-sub   { font-size: 14px; color: var(--primary-light); font-weight: 600; margin-top: 4px; }
+    .s-tag   {
+      display: inline-block; margin-top: 8px;
+      background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.25);
+      color: var(--gold); font-size: 12px; font-weight: 700;
+      padding: 3px 10px; border-radius: 50px;
+    }
+
+    /* typography */
+    .gs p { font-size: 16px; color: var(--text-muted); line-height: 1.85; margin-bottom: 14px; }
+    .gs p strong { color: var(--text); font-weight: 700; }
+
+    .sh {
+      font-size: 17px; font-weight: 800; color: var(--white);
+      margin: 28px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sh::before {
+      content: ''; width: 3px; height: 15px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 3px; flex-shrink: 0;
+    }
+
+    /* numbered list */
+    .pts { list-style: none; margin: 4px 0 14px; }
+    .pts li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 16px; color: var(--text-muted);
+    }
+    .pts li:last-child { border-bottom: none; }
+    .pts li::before {
+      content: attr(data-n);
+      flex-shrink: 0; width: 24px; height: 24px;
+      border-radius: 50%; background: var(--primary);
+      color: white; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 3px;
+    }
+    .pts li strong { color: var(--text); }
+
+    /* bullets */
+    .bul { list-style: none; margin: 4px 0 14px; }
+    .bul li {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 16px; color: var(--text-muted);
+    }
+    .bul li:last-child { border-bottom: none; }
+    .bul li::before {
+      content: '›'; color: var(--primary-light);
+      font-size: 20px; font-weight: 900; line-height: 1.1; flex-shrink: 0;
+    }
+    .bul li strong { color: var(--text); }
+
+    /* callout */
+    .callout {
+      border-radius: var(--r); padding: 16px 20px;
+      margin: 18px 0; font-size: 15px; line-height: 1.75;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .callout-icon { font-size: 18px; flex-shrink: 0; }
+    .ct-tip  { background: rgba(245,197,24,0.07); border: 1px solid rgba(245,197,24,0.22); color: #E8D98A; }
+    .ct-warn { background: rgba(255,107,53,0.07); border: 1px solid rgba(255,107,53,0.22); color: #FFB08A; }
+
+    /* hook grid */
+    .hook-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0;
+    }
+    .hcard {
+      background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 14px 16px;
+    }
+    .hcard h4 { font-size: 14px; font-weight: 800; color: var(--white); margin-bottom: 5px; }
+    .hcard .hex { font-size: 13px; color: var(--primary-light); font-style: italic; }
+
+    /* tool block */
+    .tool-block {
+      background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px 24px; margin: 14px 0;
+    }
+    .tool-block h4 {
+      font-size: 15px; font-weight: 800; color: var(--white);
+      margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .tool-block .bul { margin: 0; }
+
+    /* storyboard */
+    .sb {
+      background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: var(--rl); overflow: hidden; margin: 16px 0;
+    }
+    .sb-head {
+      background: var(--dark-4); padding: 10px 16px;
+      display: grid; grid-template-columns: 34px 1fr 1fr 56px;
+      gap: 10px; font-size: 11px; font-weight: 700;
+      color: var(--text-muted); letter-spacing: 1px;
+      text-transform: uppercase; border-bottom: 1px solid var(--border);
+    }
+    .sb-row {
+      padding: 11px 16px;
+      display: grid; grid-template-columns: 34px 1fr 1fr 56px;
+      gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 14px; color: var(--text-muted); align-items: start;
+    }
+    .sb-row:last-child { border-bottom: none; }
+    .sb-n { font-weight: 800; color: var(--primary-light); padding-top: 2px; }
+    .sb-t { color: var(--text); }
+    .sb-d {
+      background: rgba(124,92,252,0.15); color: var(--primary-light);
+      padding: 2px 8px; border-radius: 50px; font-size: 11px;
+      font-weight: 700; text-align: center; white-space: nowrap;
+    }
+
+    /* summary */
+    .summary {
+      background: linear-gradient(135deg, rgba(124,92,252,0.1), rgba(255,107,53,0.05));
+      border: 1px solid rgba(124,92,252,0.25);
+      border-radius: var(--rl); padding: 26px 34px; margin: 32px 0 0;
+    }
+    .summary h4 { font-size: 17px; font-weight: 800; color: var(--white); margin-bottom: 14px; }
+    .sum-row {
+      display: flex; gap: 12px; padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 15px;
+    }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-l { width: 70px; flex-shrink: 0; font-weight: 700; color: var(--primary-light); }
+    .sum-v { color: var(--text-muted); }
+
+    /* newsletter at bottom */
+    .nl-section {
+      padding: 60px 48px;
+      background: var(--dark-2);
+      border-top: 1px solid var(--border);
+    }
+    .nl-inner { max-width: 480px; margin: 0 auto; text-align: center; }
+    .nl-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(124,92,252,0.13); border: 1px solid rgba(124,92,252,0.3);
+      color: var(--primary-light); padding: 4px 12px; border-radius: 50px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .nl-inner h2 {
+      font-size: clamp(20px, 2.5vw, 27px); font-weight: 900;
+      color: var(--white); line-height: 1.3; margin-bottom: 10px;
+    }
+    .nl-inner > p { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; }
+    .nl-form .fg { margin-bottom: 12px; text-align: right; }
+    .nl-form label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+    .nl-form input {
+      width: 100%; background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 13px 16px;
+      font-family: 'Heebo', sans-serif; font-size: 16px;
+      color: var(--text); outline: none; transition: all 0.2s;
+    }
+    .nl-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(124,92,252,0.18); }
+    .nl-form input::placeholder { color: var(--text-muted); opacity: 0.5; }
+    .nl-btn {
+      width: 100%; padding: 15px; border: none; border-radius: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; font-family: 'Heebo', sans-serif;
+      font-size: 16px; font-weight: 800;
+      cursor: pointer; margin-top: 4px; transition: all 0.25s;
+      box-shadow: 0 6px 22px rgba(124,92,252,0.4);
+    }
+    .nl-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,92,252,0.55); }
+    .nl-note { font-size: 13px; color: var(--text-muted); margin-top: 12px; }
+    .nl-ok { display: none; padding: 28px 0; text-align: center; }
+    .nl-ok .ico { font-size: 52px; margin-bottom: 12px; }
+    .nl-ok h3 { font-size: 22px; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+    .nl-ok p  { font-size: 15px; color: var(--text-muted); }
+
+    /* mobile */
+    .mob-btn {
+      display: none; position: fixed; bottom: 18px; left: 18px; z-index: 999;
+      background: var(--primary); color: white; border: none;
+      border-radius: 50px; padding: 11px 18px;
+      font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 18px rgba(124,92,252,0.5);
+    }
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 100;
+    }
+
+    @media (max-width: 840px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed; right: -240px; top: 0; width: 230px;
+        z-index: 200; transition: right 0.3s ease;
+      }
+      .sidebar.open { right: 0; }
+      .overlay.open { display: block; }
+      .mob-btn { display: flex; align-items: center; gap: 6px; }
+      .guide-header, .gs, .intro-box, .sdiv, .nl-section {
+        padding-left: 22px; padding-right: 22px;
+        margin-left: 0; margin-right: 0;
+      }
+      .intro-box { margin: 18px; }
+      .hook-grid { grid-template-columns: 1fr; }
+      .sb-head, .sb-row { grid-template-columns: 30px 1fr 1fr; }
+      .sb-head > *:last-child, .sb-row > *:last-child { display: none; }
+    }
+    @media (max-width: 480px) {
+      .guide-header { padding: 30px 18px; }
+      .gs { padding: 34px 18px 0; }
+      .nl-section { padding: 44px 18px; }
+      .summary { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== GATE ===================== -->
+  <div id="gate">
+    <div class="gate-card">
+      <div class="gate-badge">📖 מדריך דיגיטלי חינמי</div>
+      <h1 class="gate-title">
+        סדר הפעולות הנכון<br>
+        <span>ביצירת סרטונים עם AI</span>
+      </h1>
+      <div class="gate-meta">
+        ⏱ זמן קריאה: ~8 דקות &nbsp;|&nbsp; 📋 5 שלבים &nbsp;|&nbsp; 🎯 מתחיל ומתקדם
+      </div>
+
+      <ul class="gate-steps">
+        <li><span class="sn">1</span> הבנת הרעיון — מטרה, קהל ומסר</li>
+        <li><span class="sn">2</span> בניית תסריט — Hook, גוף וCTA</li>
+        <li><span class="sn">3</span> מחקר השראה ויזואלית</li>
+        <li><span class="sn">4</span> בניית סטוריבורד</li>
+        <li><span class="sn">5</span> יצירה, עריכה והנפשה</li>
+      </ul>
+
+      <form class="gate-form" id="gate-form" onsubmit="unlockGuide(event)">
+        <div class="fg">
+          <label for="g-email">אימייל</label>
+          <input type="email" id="g-email" placeholder="your@email.com" required autocomplete="email" dir="ltr" style="text-align:right;" />
+        </div>
+        <button type="submit" class="gate-btn">שלח לי את המדריך ←</button>
+      </form>
+      <div class="gate-note">
+        לקבלת המדריך ועדכונים שוטפים על יצירת תוכן עם AI — הכנס את המייל.<br>
+        לא מציק, מבטיח.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== GUIDE ===================== -->
+  <div id="guide">
+    <div class="page-wrap">
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-logo">📹 מדריך סרטוני AI</div>
+        <a class="nav-item active" href="#intro"><span class="nav-num">✦</span> מבוא</a>
+        <a class="nav-item" href="#step1"><span class="nav-num">1</span> הבנת הרעיון</a>
+        <a class="nav-item" href="#step2"><span class="nav-num">2</span> בניית תסריט</a>
+        <a class="nav-item" href="#step3"><span class="nav-num">3</span> מחקר השראה</a>
+        <a class="nav-item" href="#step4"><span class="nav-num">4</span> סטוריבורד</a>
+        <a class="nav-item" href="#step5"><span class="nav-num">5</span> יצירה ועריכה</a>
+        <a class="nav-item" href="#newsletter"><span class="nav-num">✉</span> ניוזלטר</a>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>התקדמות</span><span id="pct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+        </div>
+      </nav>
+
+      <!-- CONTENT -->
+      <main class="content">
+
+        <!-- HEADER -->
+        <header class="guide-header" id="intro">
+          <div class="g-eyebrow">📖 מדריך דיגיטלי</div>
+          <h1>סדר הפעולות הנכון<br><span>ביצירת סרטונים עם AI</span></h1>
+          <div class="g-meta">
+            <span>⏱ זמן קריאה: ~8 דקות</span>
+            <span>📋 5 שלבים</span>
+            <span>🎯 למתחיל ומתקדם</span>
+          </div>
+        </header>
+
+        <!-- INTRO -->
+        <div class="intro-box">
+          הבעיה של רוב יוצרי התוכן עם AI היא לא הכלים - זה הסדר. הם קופצים ישר ליצירת תמונות בלי תכנון, ומקבלים תוצאות מאכזבות אחרי שעות של עבודה. המדריך הזה נותן לך תהליך מסודר - 5 שלבים שעובדים בכל פרויקט.
+        </div>
+
+        <!-- ===== STEP 1 ===== -->
+        <div class="sdiv"></div>
+        <section class="gs" id="step1">
+          <div class="step-hero">
+            <div class="sbadge">1</div>
+            <div>
+              <div class="s-title">שלב 1 — הבנת הרעיון</div>
+              <div class="s-sub">הגדרת מטרה, קהל ומסר</div>
+              <div class="s-tag">⏱ 10 דקות שחוסכות שעות</div>
+            </div>
+          </div>
+
+          <p>לפני כל דבר אחר פתח word חדש וענה על שלוש שאלות. בכתב - לא בראש.</p>
+
+          <ul class="pts">
+            <li data-n="1">מה הצופה יעשה אחרי הסרטון? יקנה, יבין, ישתף, יירשם? מטרה ספציפית = כיוון ויזואלי ברור.</li>
+            <li data-n="2">מי הצופה הזה בדיוק? לא "כולם". גיל, עניין, בעיה. ככל שהתשובה מדויקת ככה ניצור תסריט יותר מדוייק</li>
+            <li data-n="3">מה המסר האחד ורק אחד שהצופה ישאר איתו? כתוב משפט אחד כדי להתמקד.</li>
+          </ul>
+
+          <div class="callout ct-tip">
+            <div class="callout-icon">💡</div>
+            <div>מלא את המשפט: <strong>"הסרטון הזה יגרום ל___ (מי?) להרגיש/להבין/לעשות ___ (מה?)."</strong> לא ניתן למלאו בבהירות? אל תתחיל עדיין.</div>
+          </div>
+
+          <p>גם פורמט — Reels (9:16, עד 60 שנ׳), YouTube (16:9, דקות) או מצגת — קובע את כל ההחלטות הויזואליות.</p>
+        </section>
+
+        <!-- ===== STEP 2 ===== -->
+        <div class="sdiv"></div>
+        <section class="gs" id="step2">
+          <div class="step-hero">
+            <div class="sbadge s2">2</div>
+            <div>
+              <div class="s-title">שלב 2 — בניית תסריט</div>
+              <div class="s-sub">Hook, גוף ו-CTA</div>
+              <div class="s-tag">⏱ 20–30 דקות</div>
+            </div>
+          </div>
+
+          <p>כל תסריט בנוי משלושה חלקים. כשהמבנה קיים, הסרטון "עובד" עוד לפני שיצרת תמונה אחת.</p>
+
+          <div class="sh">הוק - 3 שניות שקובעות הכל</div>
+          <p>50% - 70% מהצופים עוזבים אחרי שלוש שניות. ארבעה סוגים שעובדים:</p>
+
+          <div class="hook-grid">
+            <div class="hcard">
+              <h4>שבירת מיתוס</h4>
+              <div class="hex">"העצה הכי פופולרית בתחום שלך כנראה פוגעת בך."</div>
+            </div>
+            <div class="hcard">
+              <h4>נגד המומחים</h4>
+              <div class="hex">"עשיתי הפוך ממה שכל המומחים המליצו."</div>
+            </div>
+            <div class="hcard">
+              <h4>מספר מפתיע</h4>
+              <div class="hex">"90% מהאנשים לא יודעים על מה אני מדבר."</div>
+            </div>
+            <div class="hcard">
+              <h4>חרטה</h4>
+              <div class="hex">"הטעות הכי יקרה שלי הייתה להקשיב לכולם."</div>
+            </div>
+          </div>
+
+          <div class="sh">גוף הסרטון</div>
+          <p>חבר סצנות עם "לכן" ומילים שממשיכות את הסיפור ולא "ואז"</p>
+
+          <div class="sh">CTA - call to action</div>
+          <ul class="bul">
+            <li>CTA אחד בלבד. "עקוב, שתף, לחץ, ,תגיבו X כדי לקבל Y"</li>
+            <li>אמת מה שהבטחת ב-Hook.</li>
+          </ul>
+        </section>
+
+        <!-- ===== STEP 3 ===== -->
+        <div class="sdiv"></div>
+        <section class="gs" id="step3">
+          <div class="step-hero">
+            <div class="sbadge s3">3</div>
+            <div>
+              <div class="s-title">שלב 3 — מחקר השראה ויזואלית</div>
+              <div class="s-sub">לפני שה-AI מצייר — אתה צריך לדעת מה אתה רוצה</div>
+              <div class="s-tag">⏱ 15–20 דקות</div>
+            </div>
+          </div>
+
+          <div class="tool-block">
+            <h4>📌 Pinterest</h4>
+            <ul class="bul">
+              <li>צור לוח ייעודי לפרויקט.</li>
+              <li>חפש סגנון, לא נושא - "cinematic dark portrait", "minimalist neon", "warm golden hour".</li>
+              <li>שמור תמונות ייחוס בתיקייה יעודית במחשב</li>
+            </ul>
+          </div>
+
+          <div class="tool-block">
+            <h4>🎬 Pexels</h4>
+            <p style="margin:0; font-size:16px; color:var(--text-muted);">חפש סצנות דומות. שים לב למיקום הדמות בפריים, כיוון האור, ועומק שדה.</p>
+          </div>
+        </section>
+
+        <!-- ===== STEP 4 ===== -->
+        <div class="sdiv"></div>
+        <section class="gs" id="step4">
+          <div class="step-hero">
+            <div class="sbadge s4">4</div>
+            <div>
+              <div class="s-title">שלב 4 — בניית סטוריבורד</div>
+              <div class="s-sub">המפה שמונעת ממך לאבד דרך בשלב העריכה</div>
+              <div class="s-tag">⏱ 20–35 דקות | חוסך 60% מזמן העריכה</div>
+            </div>
+          </div>
+
+          <p>טבלה פשוטה עם 4 עמודות לכל סצנה: <strong>תיאור ויזואלי | טקסט/קריינות | שניות | הערות</strong></p>
+          <p>דוגמה — Reel של 25 שניות:</p>
+
+          <div class="sb">
+            <div class="sb-head"><div>#</div><div>ויזואל</div><div>טקסט</div><div>שניות</div></div>
+            <div class="sb-row">
+              <div class="sb-n">01</div>
+              <div>Close-up: hands on keyboard, dark room, blue-toned single lamp</div>
+              <div class="sb-t">אף אחד לא מלמד את הסדר הנכון...</div>
+              <div class="sb-d">0:04</div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-n">02</div>
+              <div>Split screen: chaotic AI images vs clean organized grid</div>
+              <div class="sb-t">(ויזואל בלבד)</div>
+              <div class="sb-d">0:04</div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-n">03</div>
+              <div>Overhead: notebook with "Step 1", warm desk light</div>
+              <div class="sb-t">הכל מתחיל בשאלה אחת...</div>
+              <div class="sb-d">0:05</div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-n">04</div>
+              <div>Screen: storyboard spreadsheet filling up row by row</div>
+              <div class="sb-t">כשיש לך מפה — אתה לא יכול לאבד דרך</div>
+              <div class="sb-d">0:07</div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-n">05</div>
+              <div>Final: beautiful video playing on monitor</div>
+              <div class="sb-t">הקישור בביו ←</div>
+              <div class="sb-d">0:05</div>
+            </div>
+          </div>
+
+          <div class="callout ct-tip">
+            <div class="callout-icon">💡</div>
+            <div>לפרויקטים ארוכים (15+ סצנות) - Google Sheets. לתוכן קצר - Canva.</div>
+          </div>
+        </section>
+
+        <!-- ===== STEP 5 ===== -->
+        <div class="sdiv"></div>
+        <section class="gs" id="step5">
+          <div class="step-hero">
+            <div class="sbadge s5">5</div>
+            <div>
+              <div class="s-title">שלב 5 — יצירה, עריכה והנפשה</div>
+              <div class="s-sub">מייצרים לפי הסדר, מרכיבים, ומחיים</div>
+              <div class="s-tag">⏱ משתנה לפי אורך הסרטון</div>
+            </div>
+          </div>
+
+          <p>רק עכשיו - אחרי שיש מטרה, תסריט, תמונות ייחוס וסטוריבורד מתחילים לייצר תמונות.</p>
+
+          <div class="sh">יצירת תמונות</div>
+          <ul class="bul">
+            <li>ייצר 4 וריאציות לכל סצנה - אל תקבל את הראשונה.</li>
+            <li>כל 5 סצנות - בדוק שהסגנון, הצבעים והאווירה עקביים.</li>
+          </ul>
+
+          <div class="sh">עריכה</div>
+          <p>rough cut &gt; מוזיקה &gt; אפקטים &gt; סאונד אפקטים &gt; כתוביות.</p>
+
+          <div class="sh">הנפשה (סוג אחד לסצנה)</div>
+          <ul class="bul">
+            <li><strong>Zoom In</strong> — להדגשה דרמטית</li>
+            <li><strong>Zoom Out</strong> — גילוי, סיום</li>
+            <li><strong>Pan</strong> — מעקב, חשיפה הדרגתית</li>
+          </ul>
+
+          <!-- SUMMARY -->
+          <div class="summary">
+            <h4>🎯 סיכום 5 שלבים</h4>
+            <div class="sum-row"><span class="sum-l">שלב 1</span><span class="sum-v">הגדר מטרה, קהל, מסר ופורמט - בכתב</span></div>
+            <div class="sum-row"><span class="sum-l">שלב 2</span><span class="sum-v">בנה תסריט: Hook חזק, סיפור, תגמול + CTA אחד</span></div>
+            <div class="sum-row"><span class="sum-l">שלב 3</span><span class="sum-v">אסוף תמונות להשראה ב-Pinterest \ Pexels מילות תיאור לכל תמונה</span></div>
+            <div class="sum-row"><span class="sum-l">שלב 4</span><span class="sum-v">סטוריבורד: שורה לכל סצנה, כולל ויזואל + טקסט + שניות</span></div>
+            <div class="sum-row"><span class="sum-l">שלב 5</span><span class="sum-v">ייצר לפי הסדר, ערוך לפי הסטוריבורד, הנפש.</span></div>
+          </div>
+        </section>
+
+        <!-- ===== NEWSLETTER ===== -->
+        <section class="nl-section" id="newsletter">
+          <div class="nl-inner">
+            <div class="nl-badge">📬 עדכונים שוטפים</div>
+            <h2>נשאר מעודכן בעולם יצירת ה-AI</h2>
+            <p>כלים חדשים, טיפים מעשיים ומדריכים — ישירות למייל. לא מציק, מבטיח.</p>
+            <form class="nl-form" id="nl-form" onsubmit="nlSubmit(event)">
+              <div class="fg">
+                <label for="nl-name">שם מלא</label>
+                <input type="text" id="nl-name" placeholder="הכנס שם מלא" required autocomplete="name" />
+              </div>
+              <div class="fg">
+                <label for="nl-email">אימייל</label>
+                <input type="email" id="nl-email" placeholder="your@email.com" required autocomplete="email" dir="ltr" style="text-align:right;" />
+              </div>
+              <button type="submit" class="nl-btn">הירשם לניוזלטר ←</button>
+              <div class="nl-note">🔒 אפשר להסיר בלחיצה אחת בכל עת.</div>
+            </form>
+            <div class="nl-ok" id="nl-ok">
+              <div class="ico">🎉</div>
+              <h3>ברוך הבא!</h3>
+              <p>נרשמת בהצלחה. בדוק גם את תיקיית הSpam.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+    <button class="mob-btn" id="mob-btn">☰ תוכן</button>
+    <div class="overlay" id="overlay" onclick="closeSb()"></div>
+  </div>
+
+  <script>
+    // GATE — unlock guide
+    function unlockGuide(e) {
+      e.preventDefault();
+      const gate = document.getElementById('gate');
+      const guide = document.getElementById('guide');
+      gate.style.transition = 'opacity 0.4s ease';
+      gate.style.opacity = '0';
+      setTimeout(() => {
+        gate.style.display = 'none';
+        guide.style.display = 'block';
+        setTimeout(() => guide.classList.add('visible'), 20);
+        initGuide();
+        // TODO: send email to provider
+      }, 400);
+    }
+
+    // GUIDE — init sidebar + progress after reveal
+    function initGuide() {
+      const ids = ['intro','step1','step2','step3','step4','step5','newsletter'];
+      const navLinks = document.querySelectorAll('.nav-item[href]');
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const id = e.target.id;
+          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+          const i = ids.indexOf(id);
+          if (i >= 0) {
+            const p = Math.round(((i + 1) / ids.length) * 100);
+            document.getElementById('fill').style.width = p + '%';
+            document.getElementById('pct').textContent = p + '%';
+          }
+        });
+      }, { threshold: 0.25, rootMargin: '-10% 0px -60% 0px' });
+
+      document.querySelectorAll('[id]').forEach(el => {
+        if (ids.includes(el.id)) io.observe(el);
+      });
+
+      // smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', ev => {
+          const t = document.querySelector(a.getAttribute('href'));
+          if (t) { ev.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); closeSb(); }
+        });
+      });
+    }
+
+    // SIDEBAR mobile
+    function closeSb() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+    document.getElementById('mob-btn').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    };
+
+    // NEWSLETTER
+    function nlSubmit(e) {
+      e.preventDefault();
+      document.getElementById('nl-form').style.display = 'none';
+      document.getElementById('nl-ok').style.display = 'block';
+      // TODO: connect to email provider
+    }
+  </script>
+</body>
+</html>
