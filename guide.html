@@ -521,6 +521,10 @@
 
       <form class="gate-form" id="gate-form" onsubmit="unlockGuide(event)">
         <div class="fg">
+          <label for="g-name">שם מלא</label>
+          <input type="text" id="g-name" placeholder="הכנס שם מלא" required autocomplete="name" />
+        </div>
+        <div class="fg">
           <label for="g-email">אימייל</label>
           <input type="email" id="g-email" placeholder="your@email.com" required autocomplete="email" dir="ltr" style="text-align:right;" />
         </div>
@@ -546,7 +550,6 @@
         <a class="nav-item" href="#step3"><span class="nav-num">3</span> מחקר השראה</a>
         <a class="nav-item" href="#step4"><span class="nav-num">4</span> סטוריבורד</a>
         <a class="nav-item" href="#step5"><span class="nav-num">5</span> יצירה ועריכה</a>
-        <a class="nav-item" href="#newsletter"><span class="nav-num">✉</span> ניוזלטר</a>
         <div class="progress-wrap">
           <div class="progress-label"><span>התקדמות</span><span id="pct">0%</span></div>
           <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
@@ -769,31 +772,6 @@
           </div>
         </section>
 
-        <!-- ===== NEWSLETTER ===== -->
-        <section class="nl-section" id="newsletter">
-          <div class="nl-inner">
-            <div class="nl-badge">📬 עדכונים שוטפים</div>
-            <h2>נשאר מעודכן בעולם יצירת ה-AI</h2>
-            <p>כלים חדשים, טיפים מעשיים ומדריכים — ישירות למייל. לא מציק, מבטיח.</p>
-            <form class="nl-form" id="nl-form" onsubmit="nlSubmit(event)">
-              <div class="fg">
-                <label for="nl-name">שם מלא</label>
-                <input type="text" id="nl-name" placeholder="הכנס שם מלא" required autocomplete="name" />
-              </div>
-              <div class="fg">
-                <label for="nl-email">אימייל</label>
-                <input type="email" id="nl-email" placeholder="your@email.com" required autocomplete="email" dir="ltr" style="text-align:right;" />
-              </div>
-              <button type="submit" class="nl-btn">הירשם לניוזלטר ←</button>
-              <div class="nl-note">🔒 אפשר להסיר בלחיצה אחת בכל עת.</div>
-            </form>
-            <div class="nl-ok" id="nl-ok">
-              <div class="ico">🎉</div>
-              <h3>ברוך הבא!</h3>
-              <p>נרשמת בהצלחה. בדוק גם את תיקיית הSpam.</p>
-            </div>
-          </div>
-        </section>
 
       </main>
     </div>
@@ -820,7 +798,7 @@
 
     // GUIDE — init sidebar + progress after reveal
     function initGuide() {
-      const ids = ['intro','step1','step2','step3','step4','step5','newsletter'];
+      const ids = ['intro','step1','step2','step3','step4','step5'];
       const navLinks = document.querySelectorAll('.nav-item[href]');
 
       const io = new IntersectionObserver(entries => {
@@ -865,7 +843,7 @@
       e.preventDefault();
       document.getElementById('nl-form').style.display = 'none';
       document.getElementById('nl-ok').style.display = 'block';
-              fetch('https://script.google.com/macros/s/AKfycbxLZnDQmIg-9h80UCDNieZE5EBB5iiXFz0Xz-v-DMYO_2QuxAajXS-SSRYP3IgJRHR1/exec',{method:'POST',body:JSON.stringify({name:document.getElementById('nl-name').value,email:document.getElementById('nl-email').value})}).catch(function(){});
+      // TODO: connect to email provider
     }
   </script>
 </body>
