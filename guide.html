@@ -865,7 +865,7 @@
       e.preventDefault();
       document.getElementById('nl-form').style.display = 'none';
       document.getElementById('nl-ok').style.display = 'block';
-      // TODO: connect to email provider
+              fetch('https://script.google.com/macros/s/AKfycbxLZnDQmIg-9h80UCDNieZE5EBB5iiXFz0Xz-v-DMYO_2QuxAajXS-SSRYP3IgJRHR1/exec',{method:'POST',body:JSON.stringify({name:document.getElementById('nl-name').value,email:document.getElementById('nl-email').value})}).catch(function(){});
     }
   </script>
 </body>
