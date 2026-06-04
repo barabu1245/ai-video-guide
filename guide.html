@@ -783,6 +783,19 @@
     // GATE — unlock guide
     function unlockGuide(e) {
       e.preventDefault();
+      const fullName = document.getElementById('g-name').value;
+const email = document.getElementById('g-email').value;
+
+fetch('https://script.google.com/macros/s/AKfycbww3AFI-xFhPeIxOkx9n1iAM7P4MwcwqzEoUqWAt2GP7uuoITk8Q-hT_qpJt6o-iugGRg/exec', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fullName,
+    email
+  })
+}).catch(console.error);
       const gate = document.getElementById('gate');
       const guide = document.getElementById('guide');
       gate.style.transition = 'opacity 0.4s ease';
